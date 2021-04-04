@@ -1,10 +1,10 @@
-<!-- <div *ngFor="let table of dataService.expertMatrixTable; let i = index">
+<div *ngFor="let table of dataService.expertMatrixTable; let i = index">
   <h3>Expert {{i+1}} </h3>
   <form style="overflow: auto;" [formGroup]="dataService.expertMatrixForm">
     <table mat-table [dataSource]="table.dataSource" class="mat-elevation-z8">
       <ng-container *ngFor="let column of table.columns" [matColumnDef]="column">
         <th mat-header-cell *matHeaderCellDef>
-          {{column === 'none' ? '' : column}}
+          {{column === 'none' ? 'Criteria' : column}}
         </th>
         <td mat-cell *matCellDef="let element">
           <div *ngIf="element[column].start">
@@ -31,7 +31,7 @@
   <button mat-stroked-button (click)="dataService.setMatrixRandom()">
     Set random value
   </button>
-  <button mat-stroked-button matStepperNext (click)="dataService.setAggregationMatrix()">
+  <!-- <button mat-stroked-button matStepperNext (click)="dataService.setAggregationMatrix()">
     Show aggregation
-  </button>
-</div> -->
+  </button> -->
+</div>

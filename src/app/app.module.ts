@@ -66,6 +66,7 @@ import { NormalizedWeightedFuzzyMatrixComponent } from './pages/normalized-weigh
 import { OverallIntervalValuedFuzzyPerformanceRatingComponent } from './pages/overall-interval-valued-fuzzy-performance-rating/overall-interval-valued-fuzzy-performance-rating.component';
 import { DefuzzificationComponent } from './pages/defuzzification/defuzzification.component';
 import { DegreeOfUtilityComponent } from './pages/degree-of-utility/degree-of-utility.component';
+import { BenefitsCostsComponent } from './pages/benefits-costs/benefits-costs.component';
 
 @NgModule({
   imports: [
@@ -134,7 +135,8 @@ import { DegreeOfUtilityComponent } from './pages/degree-of-utility/degree-of-ut
     NormalizedWeightedFuzzyMatrixComponent,
     OverallIntervalValuedFuzzyPerformanceRatingComponent,
     DefuzzificationComponent,
-    DegreeOfUtilityComponent
+    DegreeOfUtilityComponent,
+    BenefitsCostsComponent
   ],
   bootstrap: [AppComponent]
 })

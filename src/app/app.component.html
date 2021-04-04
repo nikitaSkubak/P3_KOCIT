@@ -9,10 +9,14 @@
     <ng-template matStepLabel>Importance of criteria</ng-template>
     <app-importance-criteria></app-importance-criteria>
   </mat-step>
-  <!-- <mat-step [stepControl]="dataService.expertMatrixForm">
+  <mat-step [stepControl]="dataService.benefitsCostsForm">
+    <ng-template matStepLabel>Benefits | costs</ng-template>
+    <app-benefits-costs></app-benefits-costs>
+  </mat-step>
+  <mat-step [stepControl]="dataService.expertMatrixForm">
     <ng-template matStepLabel>Expert assessments</ng-template>
     <my-expert-matrix></my-expert-matrix>
-  </mat-step> -->
+  </mat-step>
   <!-- <mat-step>
     <ng-template matStepLabel>Show aggregation matrix</ng-template>
     <app-aggregation-matrix></app-aggregation-matrix>

@@ -16,11 +16,16 @@ export class DataService {
     columns: Array<string>;
     dataSource: any;
   };
-  // expertMatrixForm: FormGroup;
-  // expertMatrixTable: Array<{
-  //   columns: Array<string>;
-  //   dataSource: any;
-  // }>;
+  benefitsCostsForm: FormGroup;
+  benefitsCostsTable: {
+    columns: Array<string>;
+    dataSource: any;
+  };
+  expertMatrixForm: FormGroup;
+  expertMatrixTable: Array<{
+    columns: Array<string>;
+    dataSource: any;
+  }>;
   // aggregationMatrixTable: {
   //   columns: Array<string>;
   //   dataSource: any;
@@ -119,17 +124,17 @@ export class DataService {
     const columns = ["none"];
     const dataSource = [];
 
-    for (let i = 0; i < numberCriteria; i++) {
-      columns.push(`C${i + 1}`);
+    for (let i = 0; i < numberExperts; i++) {
+      columns.push(`E${i + 1}`);
     }
 
-    for (let i = 0; i < numberExperts; i++) {
+    for (let i = 0; i < numberCriteria; i++) {
       const sub = {};
 
       columns.forEach((e, ix) => {
         if (e === "none") {
           sub[e] = {
-            data: `E${i + 1}`,
+            data: `C${i + 1}`,
             start: true,
             id: `${i}_${ix}`
           };
@@ -149,6 +154,7 @@ export class DataService {
       columns,
       dataSource
     };
+    console.log(this.importanceCriteriaTable);
   }
 
   setImportanceRandom() {
@@ -162,61 +168,107 @@ export class DataService {
     this.importanceCriteriaForm.setValue(res);
   }
 
-  // setMatrixRandom() {
-  //   const res = {};
-  //   const form = this.expertMatrixForm.value;
-  //   Object.keys(form).forEach(key => {
-  //     const atl = Object.keys(this.listOfExpertAssesments);
-  //     const inx = this.randomInteger(2, atl.length - 1);
-  //     res[key] = this.listOfExpertAssesments[atl[inx]].value;
-  //   });
-  //   this.expertMatrixForm.setValue(res);
-  // }
+  setBenefitsCost() {
+    this.benefitsCostsTable = null;
+    const form = this._formBuilder.group({});
+    const numberCriteria = this.initFormGroup.get("numberCriteria").value;
 
-  // setExpertMatrix() {
-  //   this.expertMatrixTable = [];
-  //   const form = this._formBuilder.group({});
-  //   const numberCriteria = this.initFormGroup.get("numberCriteria").value;
-  //   const numberExperts = this.initFormGroup.get("numberExperts").value;
-  //   const numberAlternatives = this.initFormGroup.get("numberAlternatives")
-  //     .value;
+    const columns = ["none", "Benefit?"];
+    const dataSource = [];
 
-  //   for (let inx = 0; inx < numberExperts; inx++) {
-  //     const columns = ["none"];
-  //     const dataSource = [];
+    for (let i = 0; i < numberCriteria; i++) {
+      const sub = {};
 
-  //     for (let i = 0; i < numberCriteria; i++) {
-  //       columns.push(`C${i + 1}`);
-  //     }
+      columns.forEach((e, ix) => {
+        if (e === "none") {
+          sub[e] = {
+            data: `C${i + 1}`,
+            start: true,
+            id: `${i}_${ix}`
+          };
+        } else {
+          sub[e] = {
+            data: i,
+            id: `${i}_${ix}`
+          };
+          form.addControl(`${i}_${ix}`, new FormControl(false));
+        }
+      });
+      dataSource.push(sub);
+    }
 
-  //     for (let i = 0; i < numberAlternatives; i++) {
-  //       const sub = {};
+    this.benefitsCostsTable = {
+      columns,
+      dataSource
+    };
 
-  //       columns.forEach((e, ix) => {
-  //         if (e === "none") {
-  //           sub[e] = {
-  //             data: `A${i + 1}`,
-  //             start: true,
-  //             id: `${inx}_${i}_${ix}`
-  //           };
-  //         } else {
-  //           sub[e] = {
-  //             data: i,
-  //             id: `${inx}_${i}_${ix}`
-  //           };
-  //           form.addControl(`${inx}_${i}_${ix}`, new FormControl(""));
-  //         }
-  //       });
-  //       dataSource.push(sub);
-  //     }
+    this.benefitsCostsForm = form;
+  }
 
-  //     this.expertMatrixTable.push({
-  //       columns,
-  //       dataSource
-  //     });
-  //   }
-  //   this.expertMatrixForm = form;
-  // }
+  setBenefitsCostsRandom() {
+    const res = {};
+    const form = this.benefitsCostsForm.value;
+    Object.keys(form).forEach(key => {
+      res[key] = this.randomInteger(1, 2) > 1;
+    });
+    this.benefitsCostsForm.setValue(res);
+  }
+
+  setMatrixRandom() {
+    const res = {};
+    const form = this.expertMatrixForm.value;
+    Object.keys(form).forEach(key => {
+      const atl = Object.keys(this.listOfExpertAssesments);
+      const inx = this.randomInteger(2, atl.length - 1);
+      res[key] = this.listOfExpertAssesments[atl[inx]].value;
+    });
+    this.expertMatrixForm.setValue(res);
+  }
+
+  setExpertMatrix() {
+    this.expertMatrixTable = [];
+    const form = this._formBuilder.group({});
+    const numberCriteria = this.initFormGroup.get("numberCriteria").value;
+    const numberExperts = this.initFormGroup.get("numberExperts").value;
+    const numberAlternatives = this.initFormGroup.get("numberAlternatives")
+      .value;
+
+    for (let inx = 0; inx < numberExperts; inx++) {
+      const columns = ["none"];
+      const dataSource = [];
+
+      for (let i = 0; i < numberAlternatives; i++) {
+        columns.push(`A${i + 1}`);
+      }
+
+      for (let i = 0; i < numberCriteria; i++) {
+        const sub = {};
+
+        columns.forEach((e, ix) => {
+          if (e === "none") {
+            sub[e] = {
+              data: `C${i + 1}`,
+              start: true,
+              id: `${inx}_${i}_${ix}`
+            };
+          } else {
+            sub[e] = {
+              data: i,
+              id: `${inx}_${i}_${ix}`
+            };
+            form.addControl(`${inx}_${i}_${ix}`, new FormControl(""));
+          }
+        });
+        dataSource.push(sub);
+      }
+
+      this.expertMatrixTable.push({
+        columns,
+        dataSource
+      });
+    }
+    this.expertMatrixForm = form;
+  }
 
   // setAggregationMatrix() {
   //   this.aggregationMatrixTable = null;
