@@ -27,38 +27,39 @@ export class AppComponent implements OnInit {
           this.dataService.setBenefitsCostsRandom();
           this.dataService.setExpertMatrix();
           stepper.next();
-          // setTimeout(() => {
-          //   this.dataService.setTriangularFuzzyNumbers();
-          //   stepper.next();
-          //   setTimeout(() => {
-          //     this.dataService.setFuzzyNumbersTransformedLinguisticTerms();
-          //     stepper.next();
-          //     setTimeout(() => {
-          //       this.dataService.setMatrixOptimalValuesCriteria();
-          //       stepper.next();
-          //       setTimeout(() => {
-          //         this.dataService.setNotmalisedFuzzyMatrix();
-          //         stepper.next();
-          //         setTimeout(() => {
-          //           this.dataService.setNormalizedWMatrix();
-          //           stepper.next();
-          //           setTimeout(() => {
-          //             this.dataService.setoOerallIntervalValuedFuzzyPerformanceRating();
-          //             stepper.next();
-          //             setTimeout(() => {
-          //               this.dataService.setDefuzzification();
-          //               stepper.next();
-          //               setTimeout(() => {
-          //                 this.dataService.setDegreeOfUtility();
-          //                 stepper.next();
-          //               });
-          //             });
-          //           });
-          //         });
-          //       });
-          //     });
-          //   });
-          // });
+          setTimeout(() => {
+            this.dataService.setMatrixRandom();
+            this.dataService.setAggregationMatrix();
+            stepper.next();
+            setTimeout(() => {
+              //   this.dataService.setFuzzyNumbersTransformedLinguisticTerms();
+              //   stepper.next();
+              //   setTimeout(() => {
+              //     this.dataService.setMatrixOptimalValuesCriteria();
+              //     stepper.next();
+              //     setTimeout(() => {
+              //       this.dataService.setNotmalisedFuzzyMatrix();
+              //       stepper.next();
+              //       setTimeout(() => {
+              //         this.dataService.setNormalizedWMatrix();
+              //         stepper.next();
+              //         setTimeout(() => {
+              //           this.dataService.setoOerallIntervalValuedFuzzyPerformanceRating();
+              //           stepper.next();
+              //           setTimeout(() => {
+              //             this.dataService.setDefuzzification();
+              //             stepper.next();
+              //             setTimeout(() => {
+              //               this.dataService.setDegreeOfUtility();
+              //               stepper.next();
+              //             });
+              //           });
+              //         });
+              //       });
+              //     });
+              //   });
+            });
+          });
         });
       });
     });

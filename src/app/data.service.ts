@@ -26,10 +26,14 @@ export class DataService {
     columns: Array<string>;
     dataSource: any;
   }>;
-  // aggregationMatrixTable: {
-  //   columns: Array<string>;
-  //   dataSource: any;
-  // };
+  aggregationMatrixCriteriaTable: {
+    columns: Array<string>;
+    dataSource: any;
+  };
+  aggregationMatrixAlternativeTable: {
+    columns: Array<string>;
+    dataSource: any;
+  };
   // triangularFuzzyCriteriaTable: {
   //   columns: Array<string>;
   //   dataSource: any;
@@ -154,7 +158,6 @@ export class DataService {
       columns,
       dataSource
     };
-    console.log(this.importanceCriteriaTable);
   }
 
   setImportanceRandom() {
@@ -243,7 +246,6 @@ export class DataService {
 
       for (let i = 0; i < numberCriteria; i++) {
         const sub = {};
-
         columns.forEach((e, ix) => {
           if (e === "none") {
             sub[e] = {
@@ -270,56 +272,117 @@ export class DataService {
     this.expertMatrixForm = form;
   }
 
-  // setAggregationMatrix() {
-  //   this.aggregationMatrixTable = null;
-  //   const form = this.expertMatrixForm.value;
-  //   const numberCriteria = this.initFormGroup.get("numberCriteria").value;
-  //   const numberAlternatives = this.initFormGroup.get("numberAlternatives")
-  //     .value;
+  setAggregationMatrix() {
+    this.aggregationMatrixCriteriaTable = null;
+    this.aggregationMatrixAlternativeTable = null;
 
-  //   const columns = ["none"];
-  //   const dataSource = [];
+    const form = this.importanceCriteriaForm.value;
+    const form1 = this.expertMatrixForm.value;
+    const numberCriteria = this.initFormGroup.get("numberCriteria").value;
+    const numberAlternatives = this.initFormGroup.get("numberAlternatives")
+      .value;
+    const columns = ["none", "Weight"];
+    const columns1 = ["none"];
+    let dataSource = [];
+    let dataSource1 = [];
 
-  //   for (let i = 0; i < numberCriteria; i++) {
-  //     columns.push(`C${i + 1}`);
-  //   }
+    for (let i = 0; i < numberAlternatives; i++) {
+      columns1.push("A" + (i + 1));
+    }
 
-  //   for (let i = 0; i < numberAlternatives; i++) {
-  //     const sub = {};
+    for (let i = 0; i < numberCriteria; i++) {
+      dataSource.push({
+        none: {
+          data: `C${i + 1}`,
+          start: true,
+          id: `${i}`
+        },
+        Weight: {
+          data: [],
+          id: `${i}`
+        }
+      });
 
-  //     columns.forEach((e, ix) => {
-  //       if (e === "none") {
-  //         sub[e] = {
-  //           data: `E${i + 1}`,
-  //           start: true,
-  //           id: `${i}_${ix}`
-  //         };
-  //       } else {
-  //         const data = Object.keys(form)
-  //           .filter(key => {
-  //             const subs = key.split("_");
-  //             if (+subs[1] === i && +subs[2] === ix) {
-  //               return true;
-  //             }
-  //             return false;
-  //           })
-  //           .map(key => {
-  //             return form[key];
-  //           });
-  //         sub[e] = {
-  //           data: JSON.stringify(data),
-  //           id: `${i}_${ix}`
-  //         };
-  //       }
-  //     });
-  //     dataSource.push(sub);
-  //   }
+      const alr = {};
+      for (let j = 0; j < numberAlternatives; j++) {
+        alr["A" + (j + 1)] = {
+          data: [],
+          id: `${i}_${j}`
+        };
+      }
+      dataSource1.push({
+        none: {
+          data: `C${i + 1}`,
+          start: true,
+          id: `${i}`
+        },
+        ...alr
+      });
+    }
 
-  //   this.aggregationMatrixTable = {
-  //     columns,
-  //     dataSource
-  //   };
-  // }
+    Object.keys(form).forEach(key => {
+      const ids = key.split("_");
+      dataSource[+ids[0]].Weight.data = [
+        ...dataSource[+ids[0]].Weight.data,
+        form[key]
+      ];
+    });
+
+    dataSource = dataSource.map(el => {
+      const l = el.Weight.data;
+      const res = [0, 0, 0];
+      l.forEach(e => {
+        const m = this.listOfCriterias.find(k => k.value === e);
+        res[0] += +m.trValue[0];
+        res[1] += +m.trValue[1];
+        res[2] += +m.trValue[2];
+      });
+      res[0] = +(res[0] / l.length).toFixed(3);
+      res[1] = +(res[1] / l.length).toFixed(3);
+      res[2] = +(res[2] / l.length).toFixed(3);
+      el.Weight.data = JSON.stringify(res);
+      return el;
+    });
+
+    this.aggregationMatrixCriteriaTable = {
+      columns,
+      dataSource
+    };
+
+    Object.keys(form1).forEach(key => {
+      const ids = key.split("_");
+      dataSource1[+ids[1]]["A" + +ids[2]].data = [
+        ...dataSource1[+ids[1]]["A" + +ids[2]].data,
+        form1[key]
+      ];
+    });
+
+    dataSource1 = dataSource1.map(el => {
+      Object.keys(el).forEach(sK => {
+        if (sK !== "none") {
+          const l = el[sK].data;
+          const res = [0, 0, 0];
+          l.forEach(e => {
+            const m = this.listOfExpertAssesments.find(k => k.value === e);
+            res[0] += +m.trValue[0];
+            res[1] += +m.trValue[1];
+            res[2] += +m.trValue[2];
+          });
+          res[0] = +(res[0] / l.length).toFixed(3);
+          res[1] = +(res[1] / l.length).toFixed(3);
+          res[2] = +(res[2] / l.length).toFixed(3);
+          el[sK].data = JSON.stringify(res);
+        }
+      });
+
+      return el;
+    });
+
+    this.aggregationMatrixAlternativeTable = {
+      columns: columns1,
+      dataSource: dataSource1
+    };
+  }
 
   // setTriangularFuzzyNumbers() {
   //   this.triangularFuzzyExpertsTable = null;
@@ -375,16 +438,16 @@ export class DataService {
   //   const sourceE = this.triangularFuzzyExpertsTable.dataSource;
 
   //   sourceC.forEach(el => {
-  //     Object.keys(el).forEach(sK => {
-  //       if (sK !== "none") {
-  //         const key = `${el["none"].data}`.replace("E", "C");
-  //         const ids = `${el[sK].id}`.split("_");
-  //         if (!critList["C" + ids[1]]) {
-  //           critList["C" + ids[1]] = {};
-  //         }
-  //         critList["C" + ids[1]][key] = el[sK].data;
-  //       }
-  //     });
+  // Object.keys(el).forEach(sK => {
+  //   if (sK !== "none") {
+  //     const key = `${el["none"].data}`.replace("E", "C");
+  //     const ids = `${el[sK].id}`.split("_");
+  //     if (!critList["C" + ids[1]]) {
+  //       critList["C" + ids[1]] = {};
+  //     }
+  //     critList["C" + ids[1]][key] = el[sK].data;
+  //   }
+  // });
   //   });
 
   //   for (let i = 0; i < Object.keys(sourceC[0]).length - 1; i++) {
