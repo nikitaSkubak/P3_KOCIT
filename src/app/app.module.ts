@@ -58,15 +58,13 @@ import { InitComponent } from "./pages/init/init.component";
 import { ExpertMatrixComponent } from "./pages/expert-matrix/expert-matrix.component";
 import { ImportanceCriteriaComponent } from "./pages/importance-criteria/importance-criteria.component";
 import { AggregationMatrixComponent } from "./pages/aggregation-matrix/aggregation-matrix.component";
-import { TriangularFuzzyNumbersComponent } from "./pages/triangular-fuzzy-numbers/triangular-fuzzy-numbers.component";
-import { FuzzyNumbersTransformedLinguisticTermsComponent } from './pages/fuzzy-numbers-transformed-linguistic-terms/fuzzy-numbers-transformed-linguistic-terms.component';
-import { MatrixOptimalValuesCriteriaComponent } from './pages/matrix-optimal-values-criteria/matrix-optimal-values-criteria.component';
-import { NormalisedFuzzyMatrixComponent } from './pages/normalised-fuzzy-matrix/normalised-fuzzy-matrix.component';
-import { NormalizedWeightedFuzzyMatrixComponent } from './pages/normalized-weighted-fuzzy-matrix/normalized-weighted-fuzzy-matrix.component';
-import { OverallIntervalValuedFuzzyPerformanceRatingComponent } from './pages/overall-interval-valued-fuzzy-performance-rating/overall-interval-valued-fuzzy-performance-rating.component';
+import { SRQComponent } from './pages/s-r-q/s-r-q.component';
+import { BestAndWorstFComponent } from './pages/best-and-worst-f/best-and-worst-f.component';
+import { NormalizedFuzzyDifferenceDComponent } from './pages/normalized-fuzzy-difference-d/normalized-fuzzy-difference-d.component';
 import { DefuzzificationComponent } from './pages/defuzzification/defuzzification.component';
-import { DegreeOfUtilityComponent } from './pages/degree-of-utility/degree-of-utility.component';
 import { BenefitsCostsComponent } from './pages/benefits-costs/benefits-costs.component';
+import { RankingComponent } from "./pages/ranking/ranking.component";
+import { ResultComponent } from "./pages/result/result.component";
 
 @NgModule({
   imports: [
@@ -128,15 +126,13 @@ import { BenefitsCostsComponent } from './pages/benefits-costs/benefits-costs.co
     ExpertMatrixComponent,
     ImportanceCriteriaComponent,
     AggregationMatrixComponent,
-    TriangularFuzzyNumbersComponent,
-    FuzzyNumbersTransformedLinguisticTermsComponent,
-    MatrixOptimalValuesCriteriaComponent,
-    NormalisedFuzzyMatrixComponent,
-    NormalizedWeightedFuzzyMatrixComponent,
-    OverallIntervalValuedFuzzyPerformanceRatingComponent,
+    SRQComponent,
+    BestAndWorstFComponent,
+    NormalizedFuzzyDifferenceDComponent,
     DefuzzificationComponent,
-    DegreeOfUtilityComponent,
-    BenefitsCostsComponent
+    BenefitsCostsComponent,
+    ResultComponent,
+    RankingComponent,
   ],
   bootstrap: [AppComponent]
 })

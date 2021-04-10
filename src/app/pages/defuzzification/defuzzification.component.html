@@ -1,9 +1,8 @@
-<!-- <form *ngIf="dataService.defuzzificationTable" style="overflow: auto;">
-  <h3>Defuzzification</h3>
+<form *ngIf="dataService.defuzzificationTable" style="overflow: auto;">
   <table mat-table [dataSource]="dataService.defuzzificationTable.dataSource" class="mat-elevation-z8">
     <ng-container *ngFor="let column of dataService.defuzzificationTable.columns" [matColumnDef]="column">
       <th mat-header-cell *matHeaderCellDef>
-        {{column === 'none' ? '' : column}}
+        {{column === 'none' ? 'Criteria' : column}}
       </th>
       <td mat-cell *matCellDef="let element">
         {{element[column].data}}
@@ -16,7 +15,7 @@
   </table>
 </form>
 <div class="bottom-btn" style="margin-top: 10px;">
-  <button mat-stroked-button matStepperNext (click)="dataService.setDegreeOfUtility()">
-  Show degree of utility
+  <button mat-stroked-button matStepperNext (click)="dataService.setRanking()">
+    Show ranking of S, R and Q
   </button>
-</div> -->
+</div>

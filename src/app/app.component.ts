@@ -8,7 +8,7 @@ import { DataService } from "./data.service";
   styleUrls: ["./app.component.css"]
 })
 export class AppComponent implements OnInit {
-  constructor(public dataService: DataService) {}
+  constructor(public dataService: DataService) { }
 
   ngOnInit() {
     this.dataService.initForm();
@@ -32,32 +32,28 @@ export class AppComponent implements OnInit {
             this.dataService.setAggregationMatrix();
             stepper.next();
             setTimeout(() => {
-              //   this.dataService.setFuzzyNumbersTransformedLinguisticTerms();
-              //   stepper.next();
-              //   setTimeout(() => {
-              //     this.dataService.setMatrixOptimalValuesCriteria();
-              //     stepper.next();
-              //     setTimeout(() => {
-              //       this.dataService.setNotmalisedFuzzyMatrix();
-              //       stepper.next();
-              //       setTimeout(() => {
-              //         this.dataService.setNormalizedWMatrix();
-              //         stepper.next();
-              //         setTimeout(() => {
-              //           this.dataService.setoOerallIntervalValuedFuzzyPerformanceRating();
-              //           stepper.next();
-              //           setTimeout(() => {
-              //             this.dataService.setDefuzzification();
-              //             stepper.next();
-              //             setTimeout(() => {
-              //               this.dataService.setDegreeOfUtility();
-              //               stepper.next();
-              //             });
-              //           });
-              //         });
-              //       });
-              //     });
-              //   });
+              this.dataService.setBestWorstF()
+              stepper.next();
+              setTimeout(() => {
+                this.dataService.setNormalizedFuzzyDifferenceD();
+                stepper.next();
+                setTimeout(() => {
+                  this.dataService.setSRQ();
+                  stepper.next();
+                  setTimeout(() => {
+                    this.dataService.setDefuzzification();
+                    stepper.next();
+                    setTimeout(() => {
+                      this.dataService.setRanking();
+                      stepper.next();
+                      setTimeout(() => {
+                        this.dataService.setResult();
+                        stepper.next();
+                      });
+                    });
+                  });
+                });
+              });
             });
           });
         });

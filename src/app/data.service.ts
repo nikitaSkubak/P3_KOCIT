@@ -34,51 +34,27 @@ export class DataService {
     columns: Array<string>;
     dataSource: any;
   };
-  // triangularFuzzyCriteriaTable: {
-  //   columns: Array<string>;
-  //   dataSource: any;
-  // };
-  // triangularFuzzyExpertsTable: {
-  //   columns: Array<string>;
-  //   dataSource: any;
-  // };
-  // matrixFNTransformedLinguisticTermsCriteriaTable: {
-  //   columns: Array<string>;
-  //   dataSource: any;
-  // };
-  // matrixFNTransformedLinguisticTermsExpertsTable: {
-  //   columns: Array<string>;
-  //   dataSource: any;
-  // };
-  // matrixOptimalValueTable: {
-  //   columns: Array<string>;
-  //   dataSource: any;
-  // };
-
-  // notmalisedFuzzyMatrixTable: {
-  //   columns: Array<string>;
-  //   dataSource: any;
-  // };
-
-  // normalizedWMatrixTable: {
-  //   columns: Array<string>;
-  //   dataSource: any;
-  // };
-
-  // overallIntervalValuedFuzzyPerformanceRatingTable: {
-  //   columns: Array<string>;
-  //   dataSource: any;
-  // };
-
-  // defuzzificationTable: {
-  //   columns: Array<string>;
-  //   dataSource: any;
-  // };
-
-  // degreeOfUtilityTable: {
-  //   columns: Array<string>;
-  //   dataSource: any;
-  // };
+  bestAndWorstFTable: {
+    columns: Array<string>;
+    dataSource: any;
+  };
+  normalizedFuzzyDifferenceDTable: {
+    columns: Array<string>;
+    dataSource: any;
+  };
+  srqTable: {
+    columns: Array<string>;
+    dataSource: any;
+  };
+  defuzzificationTable: {
+    columns: Array<string>;
+    dataSource: any;
+  };
+  rankingTable: {
+    columns: Array<string>;
+    dataSource: any;
+  };
+  result: string;
 
   listOfCriterias: any = [
     { value: "VL", viewValue: "Very low (VL)", trValue: [0.0, 0.1, 0.3] },
@@ -97,10 +73,26 @@ export class DataService {
     { value: "E", viewValue: "Excellent (E)", trValue: [0.8, 0.9, 1.0] }
   ];
 
-  constructor(private _formBuilder: FormBuilder) {}
+  constructor(private _formBuilder: FormBuilder) { }
 
   randomInteger(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
+  }
+
+  isMaxFuzzy(a1: Array<number>, a2: Array<number>) {
+    if (a1[2] > a2[2]) {
+      return true;
+    }
+
+    if (a1[2] == a2[2] && a1[1] > a2[1]) {
+      return true;
+    }
+
+    if (a1[2] == a2[2] && a1[1] == a2[1] && a1[0] > a2[0]) {
+      return true;
+    }
+
+    return false;
   }
 
   initForm() {
@@ -330,16 +322,18 @@ export class DataService {
 
     dataSource = dataSource.map(el => {
       const l = el.Weight.data;
-      const res = [0, 0, 0];
+      const res = [1, 0, 0];
       l.forEach(e => {
         const m = this.listOfCriterias.find(k => k.value === e);
-        res[0] += +m.trValue[0];
+        if (m.trValue[0] < res[0]) {
+          res[0] = m.trValue[0];
+        }
         res[1] += +m.trValue[1];
-        res[2] += +m.trValue[2];
+        if (m.trValue[2] > res[2]) {
+          res[2] = m.trValue[2];
+        }
       });
-      res[0] = +(res[0] / l.length).toFixed(3);
       res[1] = +(res[1] / l.length).toFixed(3);
-      res[2] = +(res[2] / l.length).toFixed(3);
       el.Weight.data = JSON.stringify(res);
       return el;
     });
@@ -361,16 +355,18 @@ export class DataService {
       Object.keys(el).forEach(sK => {
         if (sK !== "none") {
           const l = el[sK].data;
-          const res = [0, 0, 0];
+          const res = [1, 0, 0];
           l.forEach(e => {
             const m = this.listOfExpertAssesments.find(k => k.value === e);
-            res[0] += +m.trValue[0];
+            if (m.trValue[0] < res[0]) {
+              res[0] = m.trValue[0];
+            }
             res[1] += +m.trValue[1];
-            res[2] += +m.trValue[2];
+            if (m.trValue[2] > res[2]) {
+              res[2] = m.trValue[2];
+            }
           });
-          res[0] = +(res[0] / l.length).toFixed(3);
           res[1] = +(res[1] / l.length).toFixed(3);
-          res[2] = +(res[2] / l.length).toFixed(3);
           el[sK].data = JSON.stringify(res);
         }
       });
@@ -384,477 +380,411 @@ export class DataService {
     };
   }
 
-  // setTriangularFuzzyNumbers() {
-  //   this.triangularFuzzyExpertsTable = null;
-  //   this.triangularFuzzyCriteriaTable = null;
-  //   const form = this.importanceCriteriaForm.value;
-
-  //   this.triangularFuzzyExpertsTable = {
-  //     columns: [...this.aggregationMatrixTable.columns],
-  //     dataSource: JSON.parse(
-  //       JSON.stringify(this.aggregationMatrixTable.dataSource)
-  //     ).map(res => {
-  //       Object.keys(res).forEach(key => {
-  //         const val = res[key];
-
-  //         if (val.data.startsWith("[")) {
-  //           val.data = JSON.stringify(
-  //             JSON.parse(val.data).map(e => {
-  //               return this.listOfExpertAssesments.find(k => k.value === e)
-  //                 .trValue;
-  //             })
-  //           );
-  //         } else {
-  //           val.data = val.data.replace("E", "A");
-  //         }
-  //       });
-  //       return res;
-  //     })
-  //   };
-
-  //   this.triangularFuzzyCriteriaTable = {
-  //     columns: [...this.importanceCriteriaTable.columns],
-  //     dataSource: JSON.parse(
-  //       JSON.stringify(this.importanceCriteriaTable.dataSource)
-  //     ).map(res => {
-  //       Object.keys(res).forEach(key => {
-  //         const val = res[key];
-  //         if (!`${val.data}`.startsWith("E")) {
-  //           val.data = JSON.stringify(
-  //             this.listOfCriterias.find(e => e.value === form[val.id]).trValue
-  //           );
-  //         }
-  //       });
-  //       return res;
-  //     })
-  //   };
-  // }
-
-  // setFuzzyNumbersTransformedLinguisticTerms() {
-  //   this.matrixFNTransformedLinguisticTermsCriteriaTable = null;
-  //   const dataSource = [];
-  //   const critList = {};
-  //   const sourceC = this.triangularFuzzyCriteriaTable.dataSource;
-  //   const sourceE = this.triangularFuzzyExpertsTable.dataSource;
-
-  //   sourceC.forEach(el => {
-  // Object.keys(el).forEach(sK => {
-  //   if (sK !== "none") {
-  //     const key = `${el["none"].data}`.replace("E", "C");
-  //     const ids = `${el[sK].id}`.split("_");
-  //     if (!critList["C" + ids[1]]) {
-  //       critList["C" + ids[1]] = {};
-  //     }
-  //     critList["C" + ids[1]][key] = el[sK].data;
-  //   }
-  // });
-  //   });
-
-  //   for (let i = 0; i < Object.keys(sourceC[0]).length - 1; i++) {
-  //     const res = {};
-  //     res["none"] = {
-  //       id: i,
-  //       start: true,
-  //       data: "C" + (1 + i)
-  //     };
-
-  //     res["l"] = {
-  //       id: i,
-  //       data: Math.min(
-  //         ...Object.values(critList["C" + (1 + i)]).map(
-  //           (pp: string) => JSON.parse(pp)[0]
-  //         )
-  //       )
-  //     };
-
-  //     res["l`"] = {
-  //       id: i,
-  //       data: Math.pow(
-  //         Object.values(critList["C" + (1 + i)])
-  //           .map((pp: string) => JSON.parse(pp)[0])
-  //           .reduce((a, b) => a * b, 1),
-  //         1 / Object.values(critList["C" + (1 + i)]).length
-  //       )
-  //     };
-
-  //     res["m"] = {
-  //       id: i,
-  //       data: Math.pow(
-  //         Object.values(critList["C" + (1 + i)])
-  //           .map((pp: string) => JSON.parse(pp)[1])
-  //           .reduce((a, b) => a * b, 1),
-  //         1 / Object.values(critList["C" + (1 + i)]).length
-  //       )
-  //     };
-
-  //     res["u`"] = {
-  //       id: i,
-  //       data: Math.pow(
-  //         Object.values(critList["C" + (1 + i)])
-  //           .map((pp: string) => JSON.parse(pp)[2])
-  //           .reduce((a, b) => a * b, 1),
-  //         1 / Object.values(critList["C" + (1 + i)]).length
-  //       )
-  //     };
-
-  //     res["u"] = {
-  //       id: i,
-  //       data: Math.max(
-  //         ...Object.values(critList["C" + (1 + i)]).map(
-  //           (pp: string) => JSON.parse(pp)[2]
-  //         )
-  //       )
-  //     };
-
-  //     dataSource.push(res);
-  //   }
-
-  //   this.matrixFNTransformedLinguisticTermsCriteriaTable = {
-  //     columns: ["none", "l", "l`", "m", "u`", "u"],
-  //     dataSource
-  //   };
-
-  //   const dataSourceExp = [];
-
-  //   for (let j = 0; j < Object.keys(sourceE).length; j++) {
-  //     for (let i = 0; i < Object.keys(sourceE[j]).length - 1; i++) {
-  //       const res = {};
-  //       res["none"] = {
-  //         id: i,
-  //         start: true,
-  //         data: `A${1 + j}_C${1 + i}`
-  //       };
-  //       res["l"] = {
-  //         id: i,
-  //         data: Math.min(
-  //           ...JSON.parse(sourceE[j][`C${1 + i}`].data).map(e => e[0])
-  //         )
-  //       };
-
-  //       res["l`"] = {
-  //         id: i,
-  //         data: Math.pow(
-  //           JSON.parse(sourceE[j][`C${1 + i}`].data)
-  //             .map(e => e[0])
-  //             .reduce((a, b) => a * b, 1),
-  //           1 / JSON.parse(sourceE[j][`C${1 + i}`].data).length
-  //         )
-  //       };
-
-  //       res["m"] = {
-  //         id: i,
-  //         data: Math.pow(
-  //           JSON.parse(sourceE[j][`C${1 + i}`].data)
-  //             .map(e => e[1])
-  //             .reduce((a, b) => a * b, 1),
-  //           1 / JSON.parse(sourceE[j][`C${1 + i}`].data).length
-  //         )
-  //       };
-
-  //       res["u`"] = {
-  //         id: i,
-  //         data: Math.pow(
-  //           JSON.parse(sourceE[j][`C${1 + i}`].data)
-  //             .map(e => e[2])
-  //             .reduce((a, b) => a * b, 1),
-  //           1 / JSON.parse(sourceE[j][`C${1 + i}`].data).length
-  //         )
-  //       };
-
-  //       res["u"] = {
-  //         id: i,
-  //         data: Math.max(
-  //           ...JSON.parse(sourceE[j][`C${1 + i}`].data).map(e => e[2])
-  //         )
-  //       };
-
-  //       dataSourceExp.push(res);
-  //     }
-  //   }
-
-  //   this.matrixFNTransformedLinguisticTermsExpertsTable = {
-  //     columns: ["none", "l", "l`", "m", "u`", "u"],
-  //     dataSource: dataSourceExp
-  //   };
-  // }
-
-  // setMatrixOptimalValuesCriteria() {
-  //   this.matrixOptimalValueTable = null;
-  //   const dataSource = [];
-  //   const listCr = {};
-
-  //   this.matrixFNTransformedLinguisticTermsExpertsTable.dataSource.forEach(
-  //     el => {
-  //       Object.keys(el).forEach(key => {
-  //         if (key !== "none") {
-  //           const keys = `${el["none"].data}`.split("_");
-  //           if (!listCr[keys[1]]) {
-  //             listCr[keys[1]] = {};
-  //           }
-  //           listCr[keys[1]][keys[0]] = el;
-  //         }
-  //       });
-  //     }
-  //   );
-
-  //   Object.keys(listCr).forEach(key => {
-  //     const res = {};
-  //     res["none"] = {
-  //       id: 0,
-  //       start: true,
-  //       data: key
-  //     };
-
-  //     res["l"] = {
-  //       id: 0,
-  //       data: Math.max(...Object.values(listCr[key]).map(e => e["l"].data))
-  //     };
-
-  //     res["l`"] = {
-  //       id: 0,
-  //       data: Math.max(...Object.values(listCr[key]).map(e => e["l`"].data))
-  //     };
-
-  //     res["m"] = {
-  //       id: 0,
-  //       data: Math.max(...Object.values(listCr[key]).map(e => e["m"].data))
-  //     };
-
-  //     res["u`"] = {
-  //       id: 0,
-  //       data: Math.max(...Object.values(listCr[key]).map(e => e["u`"].data))
-  //     };
-
-  //     res["u"] = {
-  //       id: 0,
-  //       data: Math.max(...Object.values(listCr[key]).map(e => e["u"].data))
-  //     };
-
-  //     dataSource.push(res);
-  //   });
-
-  //   this.matrixOptimalValueTable = {
-  //     columns: ["none", "l", "l`", "m", "u`", "u"],
-  //     dataSource
-  //   };
-  // }
-
-  // setNotmalisedFuzzyMatrix() {
-  //   this.notmalisedFuzzyMatrixTable = null;
-  //   const dataSource = [];
-
-  //   const exp = JSON.parse(
-  //     JSON.stringify(
-  //       this.matrixFNTransformedLinguisticTermsExpertsTable.dataSource
-  //     )
-  //   );
-  //   const opt = JSON.parse(
-  //     JSON.stringify(this.matrixOptimalValueTable.dataSource)
-  //   );
-  //   const col = opt.length;
-
-  //   const criterias = {};
-  //   exp.forEach(el => {
-  //     const keys = `${el["none"].data}`.split("_");
-  //     if (!criterias[keys[1]]) {
-  //       criterias[keys[1]] = {};
-  //       criterias[keys[1]]["Optimal"] = opt.find(
-  //         e => e["none"].data === keys[1]
-  //       );
-  //     }
-  //     criterias[keys[1]][keys[0]] = el;
-  //   });
-
-  //   Object.keys(criterias).forEach(key => {
-  //     Object.keys(criterias[key]).forEach(sKye => {
-  //       const k = key + "_" + sKye;
-  //       const d = criterias[key][sKye];
-  //       d["none"].data = k;
-  //       Object.keys(d).forEach(k => {
-  //         if (k !== "none") {
-  //           d[k].data = d[k].data / col;
-  //         }
-  //       });
-  //       dataSource.push(d);
-  //     });
-  //   });
-
-  //   this.notmalisedFuzzyMatrixTable = {
-  //     columns: ["none", "l", "l`", "m", "u`", "u"],
-  //     dataSource
-  //   };
-  // }
-
-  // setNormalizedWMatrix() {
-  //   this.normalizedWMatrixTable = null;
-  //   const norm = JSON.parse(
-  //     JSON.stringify(this.notmalisedFuzzyMatrixTable.dataSource)
-  //   );
-  //   const criter = JSON.parse(
-  //     JSON.stringify(
-  //       this.matrixFNTransformedLinguisticTermsCriteriaTable.dataSource
-  //     )
-  //   );
-  //   const dataSource = [];
-
-  //   norm.forEach(el => {
-  //     const keys = `${el["none"].data}`.split("_");
-  //     const cr = criter.find(e => e["none"].data === keys[0]);
-
-  //     Object.keys(el).forEach(k => {
-  //       if (k !== "none") {
-  //         el[k].data = el[k].data * cr[k].data;
-  //       }
-  //     });
-  //     dataSource.push(el);
-  //   });
-
-  //   this.normalizedWMatrixTable = {
-  //     columns: ["none", "l", "l`", "m", "u`", "u"],
-  //     dataSource
-  //   };
-  // }
-
-  // setoOerallIntervalValuedFuzzyPerformanceRating() {
-  //   this.overallIntervalValuedFuzzyPerformanceRatingTable = null;
-
-  //   const dataSource = [];
-  //   const sep = {};
-
-  //   JSON.parse(JSON.stringify(this.normalizedWMatrixTable.dataSource)).forEach(
-  //     el => {
-  //       const keys = el["none"].data.split("_");
-
-  //       if (!sep[keys[1]]) {
-  //         sep[keys[1]] = {};
-  //         sep[keys[1]].data = [];
-  //       }
-  //       sep[keys[1]].data.push(el);
-  //     }
-  //   );
-
-  //   const getSumEl = (dataList, key) => {
-  //     let sum = 0;
-
-  //     dataList.forEach(el => {
-  //       sum += el[key].data;
-  //     });
-
-  //     return sum;
-  //   };
-
-  //   Object.keys(sep).forEach(key => {
-  //     const res = {};
-  //     res["none"] = {
-  //       data: key,
-  //       start: true,
-  //       id: 0
-  //     };
-
-  //     res["l"] = {
-  //       data: getSumEl(sep[key].data, "l"),
-  //       id: 0
-  //     };
-
-  //     res["l`"] = {
-  //       data: getSumEl(sep[key].data, "l`"),
-  //       id: 0
-  //     };
-
-  //     res["m"] = {
-  //       data: getSumEl(sep[key].data, "m"),
-  //       id: 0
-  //     };
-
-  //     res["u`"] = {
-  //       data: getSumEl(sep[key].data, "u`"),
-  //       id: 0
-  //     };
-
-  //     res["u"] = {
-  //       data: getSumEl(sep[key].data, "u"),
-  //       id: 0
-  //     };
-
-  //     dataSource.push(res);
-  //   });
-
-  //   this.overallIntervalValuedFuzzyPerformanceRatingTable = {
-  //     columns: ["none", "l", "l`", "m", "u`", "u"],
-  //     dataSource
-  //   };
-  // }
-
-  // setDefuzzification() {
-  //   this.defuzzificationTable = null;
-
-  //   const dataSource = [];
-
-  //   JSON.parse(
-  //     JSON.stringify(
-  //       this.overallIntervalValuedFuzzyPerformanceRatingTable.dataSource
-  //     )
-  //   ).forEach(el => {
-  //     const res = {};
-
-  //     res["none"] = el["none"];
-  //     res["res"] = {
-  //       data:
-  //         (el["l"].data +
-  //           el["l`"].data +
-  //           el["m"].data +
-  //           el["u`"].data +
-  //           el["u"].data) /
-  //         5,
-  //       id: 0
-  //     };
-
-  //     dataSource.push(res);
-  //   });
-
-  //   this.defuzzificationTable = {
-  //     columns: ["none", "res"],
-  //     dataSource
-  //   };
-  // }
-
-  // setDegreeOfUtility() {
-  //   this.degreeOfUtilityTable = null;
-  //   const dataSource = [];
-
-  //   let max = {
-  //     none: { data: "" },
-  //     res: { data: 0 }
-  //   };
-  //   const optimal = this.defuzzificationTable.dataSource.find(
-  //     e => e["none"].data === "Optimal"
-  //   ).res.data;
-
-  //   JSON.parse(JSON.stringify(this.defuzzificationTable.dataSource)).forEach(
-  //     el => {
-  //       el["res"].data = el["res"].data / +optimal;
-  //       if (el["none"].data !== "Optimal" && max.res.data < el["res"].data) {
-  //         max = el;
-  //       }
-  //       dataSource.push(el);
-  //     }
-  //   );
-
-  //   dataSource.push({
-  //     none: {
-  //       data: "Solution: " + max.none.data,
-  //       id: 0
-  //     },
-  //     res: {
-  //       data:
-  //         max.res.data +
-  //         " - has a rank of 1, at it is the closest to the optimal solution"
-  //     }
-  //   });
-
-  //   this.degreeOfUtilityTable = {
-  //     columns: ["none", "res"],
-  //     dataSource
-  //   };
-  // }
+  setBestWorstF() {
+    this.bestAndWorstFTable = null;
+
+    const form = this.benefitsCostsForm.value;
+    const columns = ['none', 'f*', 'fo'];
+    const dataSource = [];
+
+    const cList = {};
+    this.aggregationMatrixAlternativeTable.dataSource.forEach(element => {
+      const tmp = [];
+      let mx = null;
+      let mi = null;
+      Object.keys(element).forEach(key => {
+        if (key !== 'none') {
+          tmp.push(JSON.parse(element[key].data))
+        }
+      });
+      tmp.forEach(e => {
+        if (!mx) {
+          mx = e;
+        }
+        if (!mi) {
+          mi = e;
+        }
+        if (mx && !this.isMaxFuzzy(mx, e)) {
+          mx = e;
+        }
+        if (mi && this.isMaxFuzzy(mi, e)) {
+          mi = e;
+        }
+      });
+      cList[element['none'].data] = {
+        tmp,
+        mx,
+        mi
+      };
+    });
+
+    Object.keys(cList).forEach(key => {
+      const id = +key.split('C')[1];
+      const ben = form[(id - 1) + '_1'];
+      dataSource.push({
+        'f*': { data: JSON.stringify(ben ? cList[key].mx : cList[key].mi), id, },
+        'fo': { data: JSON.stringify(ben ? cList[key].mi : cList[key].mx), id, },
+        none: { data: key, start: true, id }
+      })
+    });
+
+    this.bestAndWorstFTable = {
+      columns,
+      dataSource
+    };
+  }
+
+  setNormalizedFuzzyDifferenceD() {
+    this.normalizedFuzzyDifferenceDTable = null;
+
+    const form = this.benefitsCostsForm.value;
+    const dataSource = [];
+
+    this.aggregationMatrixAlternativeTable.dataSource.forEach(element => {
+      const d = JSON.parse(JSON.stringify(element));
+      const id = +d['none']['data'].split('C')[1];
+      const ben = form[(id - 1) + '_1'];
+      const bw = this.bestAndWorstFTable.dataSource.find(e => e['none']['data'] === d['none']['data']);
+      Object.keys(d).forEach(key => {
+        if (key !== 'none') {
+          let res = null;
+          if (ben) {
+            const b = JSON.parse(bw['f*']['data'])[2] - JSON.parse(bw['fo']['data'])[0];
+            res = JSON.stringify([
+              +((JSON.parse(bw['f*']['data'])[0] - JSON.parse(d[key]['data'])[2]) / b).toFixed(3),
+              +((JSON.parse(bw['f*']['data'])[1] - JSON.parse(d[key]['data'])[1]) / b).toFixed(3),
+              +((JSON.parse(bw['f*']['data'])[2] - JSON.parse(d[key]['data'])[0]) / b).toFixed(3),
+            ]);
+          } else {
+            const b = JSON.parse(bw['fo']['data'])[2] - JSON.parse(bw['f*']['data'])[0];
+            res = JSON.stringify([
+              +((JSON.parse(d[key]['data'])[0] - JSON.parse(bw['f*']['data'])[2]) / b).toFixed(3),
+              +((JSON.parse(d[key]['data'])[1] - JSON.parse(bw['f*']['data'])[1]) / b).toFixed(3),
+              +((JSON.parse(d[key]['data'])[2] - JSON.parse(bw['f*']['data'])[0]) / b).toFixed(3),
+            ]);
+          }
+          d[key].data = res;
+        }
+      });
+      dataSource.push(d)
+    });
+
+    this.normalizedFuzzyDifferenceDTable = {
+      columns: this.aggregationMatrixAlternativeTable.columns,
+      dataSource
+    };
+  }
+
+  setSRQ() {
+    this.srqTable = null;
+
+    const S = {
+      none: {
+        data: "S",
+        id: 0,
+        start: true,
+      }
+    };
+
+    const R = {
+      none: {
+        data: "R",
+        id: 1,
+        start: true,
+      }
+    };
+
+    const Q = {
+      none: {
+        data: "Q",
+        id: 2,
+        start: true,
+      }
+    };
+
+    const aS = {};
+
+    this.normalizedFuzzyDifferenceDTable.dataSource.forEach(element => {
+      Object.keys(element).forEach(key => {
+        if (key !== 'none') {
+          if (!aS[key]) {
+            aS[key] = {
+              data: []
+            };
+          }
+          aS[key].data = [...aS[key].data, element[key].data];
+        }
+      });
+    });
+
+    let minR = [100, 100, 100];
+    let maxR = [-100, -100, -100];
+    let minS = [100, 100, 100,];
+    let maxS = [-100, -100, -100];
+
+    Object.keys(aS).forEach(key => {
+      const sum = [0, 0, 0];
+      R[key] = {
+        data: [-100, -100, -100]
+      }
+
+      aS[key]['data'].forEach((element, inx) => {
+        const w = this.aggregationMatrixCriteriaTable.dataSource.find(e => e['none']['data'] === ('C' + (inx + 1)));
+        const wd = JSON.parse(w['Weight']['data']);
+        const d = JSON.parse(element);
+
+        const l = +(d[0] * wd[0]).toFixed(3);
+        const m = +(d[1] * wd[1]).toFixed(3);
+        const r = +(d[2] * wd[2]).toFixed(3);
+
+        if (this.isMaxFuzzy([l, m, r], R[key].data)) {
+          R[key].data = [l, m, r];
+        }
+
+        sum[0] = +(+sum[0] + l).toFixed(3);
+        sum[1] = +(+sum[1] + m).toFixed(3);
+        sum[2] = +(+sum[2] + r).toFixed(3);
+      });
+
+      if (this.isMaxFuzzy(sum, maxS)) {
+        maxS = sum;
+      }
+
+      if (!this.isMaxFuzzy(sum, minS)) {
+        minS = sum;
+      }
+
+      if (this.isMaxFuzzy(R[key].data, maxR)) {
+        maxR = R[key].data;
+      }
+
+      if (!this.isMaxFuzzy(R[key].data, minR)) {
+        minR = R[key].data;
+      }
+
+      S[key] = {
+        id: 0,
+        data: JSON.stringify(sum)
+      }
+      R[key] = {
+        id: 0,
+        data: JSON.stringify(R[key].data)
+      }
+    });
+
+    const v = 0.5;
+
+    this.normalizedFuzzyDifferenceDTable.columns.forEach(key => {
+      if (key !== 'none') {
+        const r = JSON.parse(R[key].data);
+        const s = JSON.parse(S[key].data);
+
+        const f1 = [
+          v * ((s[0] - minS[2]) / (maxS[2] - minS[0])),
+          v * ((s[1] - minS[1]) / (maxS[2] - minS[0])),
+          v * ((s[2] - minS[0]) / (maxS[2] - minS[0]))
+        ];
+
+        const f2 = [
+          (1 - v) * ((r[0] - minR[2]) / (maxR[2] - minR[0])),
+          (1 - v) * ((r[1] - minR[1]) / (maxR[2] - minR[0])),
+          (1 - v) * ((r[2] - minR[0]) / (maxR[2] - minR[0]))
+        ];
+
+        const res = JSON.stringify(
+          [
+            +(f1[0] + f2[0]).toFixed(3),
+            +(f1[1] + f2[1]).toFixed(3),
+            +(f1[2] + f2[2]).toFixed(3)
+          ]
+        );
+
+        Q[key] = {
+          id: 0,
+          data: res
+        }
+      }
+    });
+
+    this.srqTable = {
+      columns: this.normalizedFuzzyDifferenceDTable.columns,
+      dataSource: [S, R, Q],
+    }
+  }
+
+  setDefuzzification() {
+    this.defuzzificationTable = null;
+
+    const S = {
+      none: {
+        data: "S",
+        id: 0,
+        start: true,
+      }
+    };
+
+    const R = {
+      none: {
+        data: "R",
+        id: 1,
+        start: true,
+      }
+    };
+
+    const Q = {
+      none: {
+        data: "Q",
+        id: 2,
+        start: true,
+      }
+    };
+
+    this.normalizedFuzzyDifferenceDTable.columns.forEach(key => {
+      if (key !== 'none') {
+        const s = JSON.parse(this.srqTable.dataSource.find(e => e['none']['data'] === 'S')[key].data);
+        const r = JSON.parse(this.srqTable.dataSource.find(e => e['none']['data'] === 'R')[key].data);
+        const q = JSON.parse(this.srqTable.dataSource.find(e => e['none']['data'] === 'Q')[key].data);
+
+        Q[key] = {
+          id: 0,
+          data: +((q[0] + 2 * q[1] + q[2]) / 4).toFixed(3)
+        };
+
+        S[key] = {
+          id: 0,
+          data: +((s[0] + 2 * s[1] + s[2]) / 4).toFixed(3)
+        };
+
+        R[key] = {
+          id: 0,
+          data: +((r[0] + 2 * r[1] + r[2]) / 4).toFixed(3)
+        };
+      }
+    });
+
+    this.defuzzificationTable = {
+      columns: this.normalizedFuzzyDifferenceDTable.columns,
+      dataSource: [S, R, Q],
+    }
+  }
+
+  setRanking() {
+    this.rankingTable = null;
+
+    const S = {
+      none: {
+        data: "S",
+        id: 0,
+        start: true,
+      }
+    };
+
+    const R = {
+      none: {
+        data: "R",
+        id: 1,
+        start: true,
+      }
+    };
+
+    const Q = {
+      none: {
+        data: "Q",
+        id: 2,
+        start: true,
+      }
+    };
+
+    const s = this.defuzzificationTable.dataSource.find(e => e['none']['data'] === 'S');
+    const r = this.defuzzificationTable.dataSource.find(e => e['none']['data'] === 'R');
+    const q = this.defuzzificationTable.dataSource.find(e => e['none']['data'] === 'Q');
+
+    const sL = Object.keys(s).filter(key => key !== 'none').map(key => ({ ...s[key], key }));
+    const rL = Object.keys(r).filter(key => key !== 'none').map(key => ({ ...r[key], key }));
+    const qL = Object.keys(q).filter(key => key !== 'none').map(key => ({ ...q[key], key }));
+    sL.sort((a, b) => a.data > b.data ? 1 : -1);
+    rL.sort((a, b) => a.data > b.data ? 1 : -1);
+    qL.sort((a, b) => a.data > b.data ? 1 : -1);
+
+    sL.forEach((d, inx) => {
+      S[d.key] = {
+        data: inx + 1,
+        id: 0
+      };
+    });
+
+    rL.forEach((d, inx) => {
+      R[d.key] = {
+        data: inx + 1,
+        id: 0
+      };
+    });
+
+    qL.forEach((d, inx) => {
+      Q[d.key] = {
+        data: inx + 1,
+        id: 0
+      };
+    });
+
+    this.rankingTable = {
+      columns: this.normalizedFuzzyDifferenceDTable.columns,
+      dataSource: [S, R, Q],
+    }
+  }
+
+  setResult() {
+    this.result = '';
+
+    let adv = 0;
+    let dq = 0;
+    let c1 = false;
+    let c2 = false;
+    let A = [];
+    
+    const s = this.defuzzificationTable.dataSource.find(e => e['none']['data'] === 'S');
+    const r = this.defuzzificationTable.dataSource.find(e => e['none']['data'] === 'R');
+    const q = this.defuzzificationTable.dataSource.find(e => e['none']['data'] === 'Q');
+
+    const sL = Object.keys(s).filter(key => key !== 'none').map(key => ({ ...s[key], key }));
+    const rL = Object.keys(r).filter(key => key !== 'none').map(key => ({ ...r[key], key }));
+    const qL = Object.keys(q).filter(key => key !== 'none').map(key => ({ ...q[key], key }));
+    sL.sort((a, b) => a.data > b.data ? 1 : -1);
+    rL.sort((a, b) => a.data > b.data ? 1 : -1);
+    qL.sort((a, b) => a.data > b.data ? 1 : -1);
+
+    const a1 = qL[qL.length - 1];
+    const a2 = qL[qL.length - 2];
+    adv = a1.data - a2.data;
+    dq = 1 / (this.defuzzificationTable.columns.length - 2);
+
+    if (adv >= dq) {
+      c1 = true;
+    }
+
+    if ((sL[sL.length - 1].key === a1.key) || (rL[rL.length - 1].key === a1.key)) {
+      c2 = true;
+    }
+
+    if (c1 && !c2) {
+      A = [a1.key, a2.key];
+    } else {
+      let mInx = 0;
+      qL.reverse().forEach((e, ix) => {
+        if (a1.data - e.data < dq) {
+          mInx = ix
+        }
+      });
+      A = qL.slice(0, mInx + 1).map(e => e.key);
+    }
+
+    this.result = `
+    Adv = ${adv.toFixed(4)}, DQ = ${dq.toFixed(4)}
+    ------------------------------------------
+    condition 1 is ${c1}
+    condition 2 is ${c2}
+    ------------------------------------------
+    Best A - ${A}
+    `;
+  }
 }
